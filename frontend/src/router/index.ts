@@ -30,7 +30,7 @@ const routes: RouteRecordRaw[] = [
     name: 'services',
     component: ServicesView,
     meta: {
-      title: '服务',
+      title: '服务项目',
     },
   },
   {
@@ -60,25 +60,5 @@ router.beforeEach((to, _from, next) => {
   document.title = `${to.meta.title || 'SenWork'} | Golang 后端工程师`
   next()
 })
-
-// 预加载预测：用户Hover链接时预加载对应页面
-const preloadOnHover = (e: MouseEvent) => {
-  const target = e.target as HTMLAnchorElement
-  if (target.tagName === 'A') {
-    const href = target.getAttribute('href')
-    if (href) {
-      const route = router.getRoutes().find(r => r.path === href)
-      if (route && route.components) {
-        const component = route.components.default as () => Promise<typeof import('*.vue')>
-        if ('preload' in component) {
-          component.preload()
-        }
-      }
-    }
-  }
-}
-
-// 监听链接Hover进行预加载（可选优化）
-// document.addEventListener('mouseover', preloadOnHover)
 
 export default router

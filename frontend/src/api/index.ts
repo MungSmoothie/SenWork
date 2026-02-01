@@ -1,17 +1,22 @@
-import type { AboutInfo, Skill, Service, Experience, ContactForm, ApiResponse } from '@/types'
+import type { AboutInfo, Skill, Service, Experience, ContactForm, Project, ApiResponse } from '@/types'
 
 const API_BASE = 'http://localhost:8080/api'
 
 // ==================== 错误处理 ====================
 
 export class ApiError extends Error {
+  statusCode?: number
+  code?: string
+  
   constructor(
     message: string,
-    public statusCode?: number,
-    public code?: string
+    statusCode?: number,
+    code?: string
   ) {
     super(message)
     this.name = 'ApiError'
+    this.statusCode = statusCode
+    this.code = code
   }
 }
 
@@ -73,6 +78,18 @@ export const api = {
     setLoadingState(endpoint, true)
     try {
       const result = await fetchApi<ApiResponse<Skill[]>>(endpoint)
+      return result
+    } finally {
+      setLoadingState(endpoint, false)
+    }
+  },
+
+  // 获取项目列表
+  async getProjects(): Promise<ApiResponse<Project[]>> {
+    const endpoint = '/projects'
+    setLoadingState(endpoint, true)
+    try {
+      const result = await fetchApi<ApiResponse<Project[]>>(endpoint)
       return result
     } finally {
       setLoadingState(endpoint, false)
@@ -156,7 +173,7 @@ interface RetryConfig {
   backoff?: number
 }
 
-const defaultRetryConfig: RetryConfig = {
+const defaultRetryConfig: Required<RetryConfig> = {
   maxAttempts: 3,
   delay: 1000,
   backoff: 2,
@@ -166,7 +183,8 @@ export async function fetchWithRetry<T>(
   url: string,
   config: RetryConfig = {}
 ): Promise<T> {
-  const { maxAttempts, delay, backoff } = { ...defaultRetryConfig, ...config }
+  const mergedConfig = { ...defaultRetryConfig, ...config }
+  const { maxAttempts, delay, backoff } = mergedConfig
   
   let attempts = 0
   let currentDelay = delay

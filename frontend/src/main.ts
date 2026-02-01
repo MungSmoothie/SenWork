@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import 'element-plus/theme-chalk/src/index.scss'
 import './style.css'
 import './assets/theme.css'
 import App from './App.vue'

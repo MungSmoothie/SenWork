@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import { Menu, Close } from '@element-plus/icons-vue'
+import { ElMenu, ElMenuItem, ElIcon } from 'element-plus'
 
 const isScrolled = ref(false)
 const isMobileMenuOpen = ref(false)
 const route = useRoute()
 
 const navLinks = [
-  { name: '首页', path: '/' },
-  { name: '关于', path: '/about' },
-  { name: '服务', path: '/services' },
-  { name: '联系', path: '/contact' },
+  { name: '首页', path: '/', icon: 'Home' },
+  { name: '关于', path: '/about', icon: 'User' },
+  { name: '服务', path: '/services', icon: 'Folder' },
+  { name: '联系', path: '/contact', icon: 'Message' },
 ]
 
 function handleScroll() {
@@ -36,29 +38,53 @@ onUnmounted(() => {
 
 <template>
   <nav :class="['navbar', { scrolled: isScrolled }]">
-    <div class="container">
+    <div class="navbar-container">
       <RouterLink to="/" class="logo" @click="closeMobileMenu">
         <span class="logo-text">Sen</span>
         <span class="logo-accent">Work</span>
       </RouterLink>
 
+      <!-- Desktop Menu -->
+      <el-menu
+        :default-active="route.path"
+        mode="horizontal"
+        :ellipsis="false"
+        class="nav-menu"
+        router
+      >
+        <el-menu-item 
+          v-for="link in navLinks" 
+          :key="link.path" 
+          :index="link.path"
+        >
+          <el-icon><component :is="link.icon" /></el-icon>
+          <span>{{ link.name }}</span>
+        </el-menu-item>
+      </el-menu>
+
+      <!-- Mobile Toggle -->
       <button class="mobile-toggle" @click="toggleMobileMenu" :class="{ active: isMobileMenuOpen }">
-        <span></span>
-        <span></span>
-        <span></span>
+        <el-icon :size="24">
+          <Close v-if="isMobileMenuOpen" />
+          <Menu v-else />
+        </el-icon>
       </button>
 
-      <ul :class="['nav-links', { 'is-open': isMobileMenuOpen }]">
-        <li v-for="link in navLinks" :key="link.path">
+      <!-- Mobile Menu -->
+      <Transition name="slide-down">
+        <div v-if="isMobileMenuOpen" class="mobile-menu">
           <RouterLink
+            v-for="link in navLinks"
+            :key="link.path"
             :to="link.path"
-            :class="{ active: route.path === link.path }"
+            :class="['mobile-link', { active: route.path === link.path }]"
             @click="closeMobileMenu"
           >
-            {{ link.name }}
+            <el-icon><component :is="link.icon" /></el-icon>
+            <span>{{ link.name }}</span>
           </RouterLink>
-        </li>
-      </ul>
+        </div>
+      </Transition>
     </div>
   </nav>
 </template>
@@ -78,11 +104,11 @@ onUnmounted(() => {
 .navbar.scrolled {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-  padding: 1rem 0;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+  padding: 0.75rem 0;
 }
 
-.container {
+.navbar-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
@@ -98,6 +124,11 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
 }
 
 .logo-text {
@@ -105,100 +136,106 @@ onUnmounted(() => {
 }
 
 .logo-accent {
-  color: #4ade80;
+  color: var(--color-primary, #409EFF);
 }
 
-.nav-links {
+.nav-menu {
+  border-bottom: none !important;
+  background: transparent;
   display: flex;
-  list-style: none;
-  gap: 2.5rem;
-  margin: 0;
-  padding: 0;
+  gap: 0.5rem;
 }
 
-.nav-links a {
-  text-decoration: none;
+.nav-menu :deep(.el-menu-item) {
+  height: 48px;
+  line-height: 48px;
+  border-radius: 8px;
+  margin: 0 4px;
   color: #4b5563;
   font-weight: 500;
-  font-size: 0.95rem;
-  transition: color 0.3s ease;
-  position: relative;
+  transition: all 0.3s ease;
 }
 
-.nav-links a:hover,
-.nav-links a.active {
-  color: #4ade80;
+.nav-menu :deep(.el-menu-item:hover),
+.nav-menu :deep(.el-menu-item.is-active) {
+  background: rgba(64, 158, 255, 0.1);
+  color: var(--color-primary, #409EFF);
 }
 
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: #4ade80;
-  transition: width 0.3s ease;
-}
-
-.nav-links a:hover::after,
-.nav-links a.active::after {
-  width: 100%;
+.nav-menu :deep(.el-menu-item .el-icon) {
+  margin-right: 6px;
 }
 
 .mobile-toggle {
   display: none;
-  flex-direction: column;
-  gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0.5rem;
-}
-
-.mobile-toggle span {
-  width: 24px;
-  height: 2px;
-  background: #1a1a2e;
+  color: #1a1a2e;
+  border-radius: 8px;
   transition: all 0.3s ease;
 }
 
-.mobile-toggle.active span:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
+.mobile-toggle:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
-.mobile-toggle.active span:nth-child(2) {
+.mobile-menu {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 1rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  color: #4b5563;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.mobile-link:hover,
+.mobile-link.active {
+  background: rgba(64, 158, 255, 0.1);
+  color: var(--color-primary, #409EFF);
+}
+
+/* Slide Down Animation */
+.slide-down-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-down-leave-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-down-enter-from,
+.slide-down-leave-to {
   opacity: 0;
-}
-
-.mobile-toggle.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
+  transform: translateY(-10px);
 }
 
 @media (max-width: 768px) {
+  .nav-menu {
+    display: none;
+  }
+
   .mobile-toggle {
     display: flex;
-  }
-
-  .nav-links {
-    position: fixed;
-    top: 70px;
-    left: 0;
-    right: 0;
-    background: white;
-    flex-direction: column;
     align-items: center;
-    padding: 2rem 0;
-    gap: 1.5rem;
-    transform: translateY(-100%);
-    opacity: 0;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  }
-
-  .nav-links.is-open {
-    transform: translateY(0);
-    opacity: 1;
+    justify-content: center;
   }
 }
 </style>

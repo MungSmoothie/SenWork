@@ -1,332 +1,216 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
-import { api } from '@/api'
-import type { Service, ServiceCategory } from '@/types'
-import Card from '@/components/ui/Card.vue'
-import Button from '@/components/ui/Button.vue'
-import Modal from '@/components/ui/Modal.vue'
-import Loading from '@/components/ui/Loading.vue'
+import { ref, defineComponent, h } from 'vue'
+import { ElCard, ElButton, ElTag, ElDivider } from 'element-plus'
+import {
+  Edit, Document, Connection, ChatDotRound
+} from '@element-plus/icons-vue'
 
-const services = ref<Service[]>([])
-const loading = ref(true)
-const selectedCategory = ref<ServiceCategory | 'all'>('all')
-const selectedService = ref<Service | null>(null)
-
-const categories = computed((): Array<ServiceCategory | 'all'> => {
-  const cats = new Set<ServiceCategory | 'all'>()
-  cats.add('all')
-  services.value.forEach(s => cats.add(s.category))
-  return Array.from(cats)
+// Custom icons
+const Tool = defineComponent({
+  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
+    h('path', { d: 'M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z' })
+  ])
 })
 
-const filteredServices = computed(() => {
-  if (selectedCategory.value === 'all') {
-    return services.value
-  }
-  return services.value.filter(s => s.category === selectedCategory.value)
+const BugIcon = defineComponent({
+  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
+    h('path', { d: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z' })
+  ])
 })
 
-const featuredServices = computed(() => {
-  return services.value.filter(s => s.featured)
+const DesignDoc = defineComponent({
+  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
+    h('path', { d: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z' })
+  ])
 })
 
-const categoryColor = (category: ServiceCategory): string => {
-  const colors: Record<ServiceCategory, string> = {
-    golang: '#00ADD8',
-    'ai-agent': '#FF6B6B',
-    'cloud-native': '#4ECDC4',
-    app: '#9B59B6',
-    web: '#4ADE80',
-    other: '#64748B',
-  }
-  return colors[category] || '#64748B'
-}
-
-const categoryLabel = (category: ServiceCategory): string => {
-  const labels: Record<ServiceCategory, string> = {
-    golang: 'Go 开发',
-    'ai-agent': 'AI Agent 开发',
-    'cloud-native': '云原生开发',
-    app: 'App 开发',
-    web: 'Web 开发',
-    other: '其他服务',
-  }
-  return labels[category] || category
-}
-
-const formatPrice = (price: string): string => {
-  return price
-}
-
-onMounted(async () => {
-  try {
-    console.log('正在加载服务列表...')
-    const res = await api.getServices()
-    console.log('API 响应:', res)
-    if (res.success && res.data) {
-      services.value = res.data
-      console.log('已加载服务数量:', services.value.length)
-    } else {
-      console.warn('API 返回失败:', res)
-    }
-  } catch (e) {
-    console.error('加载服务失败:', e)
-  } finally {
-    loading.value = false
-  }
+const ApiDoc = defineComponent({
+  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
+    h('path', { d: 'M14.6 16.6l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4zm-5.2 0L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4z' })
+  ])
 })
+
+const UserManual = defineComponent({
+  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
+    h('path', { d: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z' })
+  ])
+})
+
+const CodeIcon = defineComponent({
+  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
+    h('path', { d: 'M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z' })
+  ])
+})
+
+const services = [
+  {
+    icon: BugIcon,
+    title: 'Bug 修复',
+    description: '专业修复各类程序 Bug，包括但不限于：',
+    features: ['后端服务异常排查', '性能问题优化', '内存泄漏修复', '逻辑错误修正'],
+    price: '面议',
+    color: '#F56C6C',
+  },
+  {
+    icon: DesignDoc,
+    title: '毕业设计文档',
+    description: '完整的计算机毕业设计文档服务：',
+    features: ['需求分析文档', '系统设计文档', '数据库设计文档', '接口设计文档'],
+    price: '¥500 起',
+    color: '#409EFF',
+  },
+  {
+    icon: ApiDoc,
+    title: 'API 文档',
+    description: '专业的 API 接口文档编写：',
+    features: ['OpenAPI 规范文档', '接口说明文档', '请求示例代码', '错误码说明'],
+    price: '¥300 起',
+    color: '#67C23A',
+  },
+  {
+    icon: UserManual,
+    title: '使用文档',
+    description: '详细的使用说明书编写：',
+    features: ['安装部署指南', '用户操作手册', '运维管理文档', '常见问题解答'],
+    price: '¥300 起',
+    color: '#E6A23C',
+  },
+  {
+    icon: CodeIcon,
+    title: '完整项目代码',
+    description: '从零开始的完整项目开发：',
+    features: ['前端界面开发', '后端服务开发', '数据库设计', '部署配置'],
+    price: '面议',
+    color: '#909399',
+  },
+  {
+    icon: Connection,
+    title: '项目开发',
+    description: '定制化项目开发服务：',
+    features: ['需求分析与评估', '技术方案设计', '代码开发与测试', '后期维护支持'],
+    price: '面议',
+    color: '#909399',
+  },
+]
+
+const contactInfo = [
+  { label: '服务范围', value: 'Bug 修复、文档编写、项目开发' },
+  { label: '响应时间', value: '24 小时内回复' },
+  { label: '合作方式', value: '远程协作，支持全国' },
+]
 </script>
 
 <template>
   <div class="services-page">
     <!-- Hero Section -->
     <section class="services-hero">
+      <div class="hero-bg"></div>
       <div class="container">
-        <h1 class="page-title">专业服务</h1>
-        <p class="page-subtitle">
-          为您提供 Golang 后端开发、AI Agent 开发、云原生架构等专业技术服务
-        </p>
-        
-        <!-- 核心优势 -->
-        <div class="advantages">
-          <div class="advantage-item">
-            <span class="advantage-icon">⚡</span>
-            <span class="advantage-text">快速响应</span>
+        <div class="hero-content animate-fade-in">
+          <div class="hero-badge">
+            <el-icon><Tool /></el-icon>
+            <span>服务项目</span>
           </div>
-          <div class="advantage-item">
-            <span class="advantage-icon">🎯</span>
-            <span class="advantage-text">专业可靠</span>
-          </div>
-          <div class="advantage-item">
-            <span class="advantage-icon">💰</span>
-            <span class="advantage-text">透明定价</span>
-          </div>
-          <div class="advantage-item">
-            <span class="advantage-icon">🔧</span>
-            <span class="advantage-text">售后支持</span>
-          </div>
+          <h1 class="hero-title">专业承接各类开发服务</h1>
+          <p class="hero-subtitle">从 Bug 修复到完整项目开发，用专业技术为您解决实际问题</p>
         </div>
       </div>
     </section>
 
-    <!-- Featured Services -->
-    <section v-if="featuredServices.length > 0" class="featured-section">
+    <!-- Services Grid -->
+    <section class="services-content">
       <div class="container">
-        <h2 class="section-title">精选服务</h2>
-        <div class="featured-grid">
-          <Card
-            v-for="service in featuredServices"
-            :key="service.id"
-            hoverable
-            class="featured-card"
-            @click="selectedService = service"
+        <div class="services-grid">
+          <div 
+            v-for="(service, index) in services" 
+            :key="service.title"
+            class="service-card animate-slide-up"
+            :style="{ animationDelay: `${index * 0.1}s` }"
           >
-            <div class="featured-badge">精选</div>
-            <div class="service-icon" :style="{ background: `${categoryColor(service.category)}20`, color: categoryColor(service.category) }">
-              {{ service.name.charAt(0) }}
+            <div class="service-icon-wrapper" :style="{ background: `${service.color}15`, color: service.color }">
+              <el-icon :size="32"><component :is="service.icon" /></el-icon>
             </div>
-            <h3 class="service-name">{{ service.name }}</h3>
-            <p class="service-short-desc">{{ service.shortDesc }}</p>
-            <div class="service-meta">
-              <span class="price">{{ service.priceRange }}</span>
-              <span class="delivery">{{ service.deliveryTime }}</span>
-            </div>
-            <Button variant="primary" size="sm" class="mt-4">
-              了解详情
-            </Button>
-          </Card>
-        </div>
-      </div>
-    </section>
-
-    <!-- All Services -->
-    <section class="all-services-section">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">全部服务</h2>
-          
-          <!-- Category Filter -->
-          <div class="category-filter">
-            <button
-              v-for="cat in categories"
-              :key="cat"
-              :class="['filter-btn', { active: selectedCategory === cat }]"
-              @click="selectedCategory = cat"
-            >
-              {{ cat === 'all' ? '全部' : categoryLabel(cat) }}
-            </button>
-          </div>
-        </div>
-
-        <div v-if="loading" class="loading-container">
-          <Loading size="lg" text="加载服务列表..." />
-        </div>
-
-        <div v-else class="services-grid">
-          <Card
-            v-for="service in filteredServices"
-            :key="service.id"
-            hoverable
-            class="service-card"
-            @click="selectedService = service"
-          >
-            <div class="service-header">
-              <div class="service-icon" :style="{ background: `${categoryColor(service.category)}20`, color: categoryColor(service.category) }">
-                {{ service.name.charAt(0) }}
-              </div>
-              <div class="service-info">
-                <span class="category-tag" :style="{ background: `${categoryColor(service.category)}20`, color: categoryColor(service.category) }">
-                  {{ categoryLabel(service.category) }}
-                </span>
-                <span v-if="service.popular" class="popular-badge">热门</span>
-              </div>
-            </div>
-            
-            <h3 class="service-name">{{ service.name }}</h3>
-            <p class="service-short-desc">{{ service.shortDesc }}</p>
-            
-            <div class="service-features">
-              <span
-                v-for="feature in service.features.slice(0, 3)"
-                :key="feature"
-                class="feature-tag"
-              >
+            <h3 class="service-title">{{ service.title }}</h3>
+            <p class="service-description">{{ service.description }}</p>
+            <ul class="service-features">
+              <li v-for="feature in service.features" :key="feature">
+                <el-icon><Document /></el-icon>
                 {{ feature }}
-              </span>
-              <span v-if="service.features.length > 3" class="more-tag">
-                +{{ service.features.length - 3 }}
-              </span>
-            </div>
-            
+              </li>
+            </ul>
             <div class="service-footer">
-              <div class="service-price">
-                <span class="price-label">起步价</span>
-                <span class="price-value">{{ service.priceRange }}</span>
-              </div>
-              <div class="service-time">
-                {{ service.deliveryTime }}
-              </div>
+              <span class="service-price">{{ service.price }}</span>
             </div>
-            
-            <Button variant="primary" block class="mt-4">
-              立即咨询
-            </Button>
-          </Card>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- FAQ Section -->
-    <section class="faq-section">
+    <!-- Process Section -->
+    <section class="process-section">
       <div class="container">
-        <h2 class="section-title">常见问题</h2>
-        <div class="faq-grid">
-          <Card class="faq-card">
-            <h4 class="faq-question">如何开始合作？</h4>
-            <p class="faq-answer">您可以通过联系页面提交需求，或直接添加微信沟通。我会在 24 小时内回复您。</p>
-          </Card>
-          <Card class="faq-card">
-            <h4 class="faq-question">如何收费？</h4>
-            <p class="faq-answer">根据项目复杂度和工作量定价，支持按项目打包和按小时计费两种模式。</p>
-          </Card>
-          <Card class="faq-card">
-            <h4 class="faq-question">能开发票吗？</h4>
-            <p class="faq-answer">支持开发票，可开具普通发票和增值税专用发票。</p>
-          </Card>
-          <Card class="faq-card">
-            <h4 class="faq-question">有售后支持吗？</h4>
-            <p class="faq-answer">项目交付后提供免费技术支持期，修复交付时的问题。后续支持可单独协商。</p>
-          </Card>
+        <div class="section-header animate-fade-in">
+          <h2 class="section-title">合作流程</h2>
+          <p class="section-subtitle">简单四步，轻松合作</p>
+        </div>
+        <div class="process-steps">
+          <div class="process-step animate-slide-up" style="animation-delay: 0.1s">
+            <div class="step-number">01</div>
+            <h4>需求沟通</h4>
+            <p>明确项目需求，评估可行性与报价</p>
+          </div>
+          <div class="process-arrow animate-fade-in">→</div>
+          <div class="process-step animate-slide-up" style="animation-delay: 0.2s">
+            <div class="step-number">02</div>
+            <h4>签订协议</h4>
+            <p>确认合作细节，签订服务协议</p>
+          </div>
+          <div class="process-arrow animate-fade-in">→</div>
+          <div class="process-step animate-slide-up" style="animation-delay: 0.3s">
+            <div class="step-number">03</div>
+            <h4>开发交付</h4>
+            <p>按期交付成果，阶段性汇报</p>
+          </div>
+          <div class="process-arrow animate-fade-in">→</div>
+          <div class="process-step animate-slide-up" style="animation-delay: 0.4s">
+            <div class="step-number">04</div>
+            <h4>验收结款</h4>
+            <p>验收通过，交付全部资料</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
+    <!-- Contact Section -->
+    <section class="contact-section">
       <div class="container">
-        <Card class="cta-card">
-          <h2 class="cta-title">有问题需要帮助？</h2>
-          <p class="cta-desc">无论您有任何技术问题或项目需求，都欢迎联系我。</p>
-          <div class="cta-actions">
-            <Button variant="primary" size="lg" @click="$router.push('/contact')">
-              立即联系
-            </Button>
-            <Button variant="outline" size="lg" @click="$router.push('/about')">
-              了解更多
-            </Button>
-          </div>
-        </Card>
-      </div>
-    </section>
-
-    <!-- Service Detail Modal -->
-    <Modal
-      :open="!!selectedService"
-      :title="selectedService?.name || ''"
-      size="lg"
-      @close="selectedService = null"
-    >
-      <template v-if="selectedService">
-        <div class="service-detail">
-          <div class="detail-header">
-            <span class="category-tag" :style="{ background: `${categoryColor(selectedService.category)}20`, color: categoryColor(selectedService.category) }">
-              {{ categoryLabel(selectedService.category) }}
-            </span>
-            <span v-if="selectedService.popular" class="popular-badge">热门</span>
-          </div>
-          
-          <p class="full-desc">{{ selectedService.fullDesc }}</p>
-          
-          <div class="detail-section">
-            <h4>服务内容</h4>
-            <ul class="feature-list">
-              <li v-for="feature in selectedService.features" :key="feature">
-                <svg class="check-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                </svg>
-                {{ feature }}
-              </li>
-            </ul>
-          </div>
-          
-          <div class="detail-section">
-            <h4>交付物</h4>
-            <ul class="feature-list">
-              <li v-for="item in selectedService.deliverables" :key="item">
-                <svg class="check-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                </svg>
-                {{ item }}
-              </li>
-            </ul>
-          </div>
-          
-          <div v-if="selectedService.techStack.length > 0" class="detail-section">
-            <h4>技术栈</h4>
-            <div class="tech-stack">
-              <span v-for="tech in selectedService.techStack" :key="tech" class="tech-tag">
-                {{ tech }}
-              </span>
+        <div class="contact-card animate-fade-in">
+          <div class="contact-info">
+            <h2>联系我</h2>
+            <p>有任何需求，欢迎随时联系</p>
+            <div class="contact-items">
+              <div class="contact-item">
+                <el-icon :size="20"><ChatDotRound /></el-icon>
+                <span>sen@example.com</span>
+              </div>
+              <div class="contact-item">
+                <el-icon :size="20"><Document /></el-icon>
+                <span>24 小时内响应</span>
+              </div>
             </div>
+            <RouterLink to="/contact" class="contact-btn">
+              <el-icon><ChatDotRound /></el-icon>
+              <span>立即咨询</span>
+            </RouterLink>
           </div>
-          
-          <div class="detail-footer">
-            <div class="price-info">
-              <span class="price-label">起步价</span>
-              <span class="price-value">{{ selectedService.priceRange }}</span>
-            </div>
-            <div class="time-info">
-              <span class="time-label">预计周期</span>
-              <span class="time-value">{{ selectedService.deliveryTime }}</span>
-            </div>
+          <div class="contact-note">
+            <el-tag type="success" effect="plain">诚信经营</el-tag>
+            <el-tag type="info" effect="plain">保密协议</el-tag>
+            <el-tag type="warning" effect="plain">售后支持</el-tag>
           </div>
         </div>
-      </template>
-      <template #footer>
-        <Button variant="outline" @click="selectedService = null">关闭</Button>
-        <Button variant="primary" @click="$router.push('/contact')">立即咨询</Button>
-      </template>
-    </Modal>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -335,465 +219,300 @@ onMounted(async () => {
   padding-top: 80px;
 }
 
+/* Hero Section */
+.services-hero {
+  padding: 5rem 0 6rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 30% 50%, rgba(64, 158, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 70% 50%, rgba(103, 194, 58, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
+  position: relative;
+  z-index: 1;
 }
 
-/* Hero Section */
-.services-hero {
-  padding: 6rem 0 4rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  text-align: center;
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(64, 158, 255, 0.1);
+  color: var(--color-primary, #409EFF);
+  border-radius: 50px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
 }
 
-.page-title {
+.hero-title {
   font-size: 3rem;
-  font-weight: 800;
+  font-weight: 700;
   color: #1a1a2e;
   margin-bottom: 1rem;
 }
 
-.page-subtitle {
+.hero-subtitle {
+  color: #64748b;
   font-size: 1.25rem;
-  color: #64748b;
   max-width: 600px;
-  margin: 0 auto 3rem;
+  margin: 0 auto;
 }
 
-.advantages {
-  display: flex;
-  justify-content: center;
-  gap: 3rem;
-  flex-wrap: wrap;
-}
-
-.advantage-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #64748b;
-}
-
-.advantage-icon {
-  font-size: 1.5rem;
-}
-
-/* Section Titles */
-.section-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.section-header .section-title {
-  margin-bottom: 0;
-  text-align: left;
-}
-
-/* Category Filter */
-.category-filter {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.filter-btn {
-  padding: 0.5rem 1.25rem;
-  border-radius: 50px;
-  background: white;
-  border: 1px solid #e2e8f0;
-  color: #64748b;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.filter-btn:hover {
-  border-color: #4ade80;
-  color: #4ade80;
-}
-
-.filter-btn.active {
-  background: #4ade80;
-  border-color: #4ade80;
-  color: white;
-}
-
-/* Featured Section */
-.featured-section {
+/* Services Grid */
+.services-content {
   padding: 5rem 0;
-  background: white;
 }
 
-.featured-grid {
+.services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 2rem;
 }
 
-.featured-card {
-  position: relative;
-  text-align: center;
+.service-card {
+  background: white;
+  border-radius: 20px;
   padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
-.featured-badge {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  padding: 0.25rem 0.75rem;
-  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-  color: white;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 50px;
+.service-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
 }
 
-.service-icon {
+.service-icon-wrapper {
   width: 64px;
   height: 64px;
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 auto 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.service-name {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1a1a2e;
-  margin-bottom: 0.5rem;
-}
-
-.service-short-desc {
-  font-size: 0.875rem;
-  color: #64748b;
-  margin-bottom: 1rem;
-}
-
-.service-meta {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  font-size: 0.875rem;
-}
-
-.service-meta .price {
-  font-weight: 600;
-  color: #4ade80;
-}
-
-.service-meta .delivery {
-  color: #64748b;
-}
-
-/* All Services Section */
-.all-services-section {
-  padding: 5rem 0;
-  background: #f8fafc;
-}
-
-.loading-container {
-  display: flex;
-  justify-content: center;
-  padding: 4rem 0;
-}
-
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
-}
-
-.service-card {
-  padding: 1.5rem;
-  cursor: pointer;
-}
-
-.service-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-}
-
-.service-info {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.category-tag {
-  padding: 0.25rem 0.75rem;
-  border-radius: 50px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.popular-badge {
-  padding: 0.25rem 0.75rem;
-  background: #fef3c7;
-  color: #d97706;
-  border-radius: 50px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.service-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 1rem 0;
-}
-
-.feature-tag {
-  padding: 0.25rem 0.5rem;
-  background: #f1f5f9;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  color: #64748b;
-}
-
-.more-tag {
-  font-size: 0.75rem;
-  color: #94a3b8;
-}
-
-.service-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
-}
-
-.service-price {
-  display: flex;
-  flex-direction: column;
-}
-
-.price-label {
-  font-size: 0.75rem;
-  color: #94a3b8;
-}
-
-.price-value {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #4ade80;
-}
-
-.service-time {
-  font-size: 0.875rem;
-  color: #64748b;
-}
-
-/* FAQ Section */
-.faq-section {
-  padding: 5rem 0;
-  background: white;
-}
-
-.faq-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-}
-
-.faq-card {
-  padding: 1.5rem;
-}
-
-.faq-question {
-  font-size: 1rem;
+.service-title {
+  font-size: 1.375rem;
   font-weight: 600;
   color: #1a1a2e;
   margin-bottom: 0.75rem;
 }
 
-.faq-answer {
-  font-size: 0.875rem;
+.service-description {
   color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
   line-height: 1.6;
 }
 
-/* CTA Section */
-.cta-section {
+.service-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.service-features li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.service-features li .el-icon {
+  color: var(--color-primary, #409EFF);
+  font-size: 1rem;
+}
+
+.service-footer {
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.service-price {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-primary, #409EFF);
+}
+
+/* Process Section */
+.process-section {
   padding: 5rem 0;
-  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+  background: #f8fafc;
 }
 
-.cta-card {
+.section-header {
   text-align: center;
-  padding: 3rem;
-  background: transparent;
-  border: none;
-  box-shadow: none;
+  margin-bottom: 4rem;
 }
 
-.cta-title {
+.section-title {
   font-size: 2rem;
   font-weight: 700;
-  color: white;
-  margin-bottom: 1rem;
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
 }
 
-.cta-desc {
-  font-size: 1.125rem;
-  color: #94a3b8;
-  margin-bottom: 2rem;
+.section-subtitle {
+  color: #64748b;
 }
 
-.cta-actions {
+.process-steps {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
-/* Service Detail Modal */
-.service-detail {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.process-step {
+  text-align: center;
+  max-width: 200px;
 }
 
-.detail-header {
-  display: flex;
-  gap: 0.75rem;
+.step-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-primary, #409EFF);
+  opacity: 0.3;
+  margin-bottom: 0.5rem;
 }
 
-.full-desc {
-  font-size: 1rem;
-  color: #4b5563;
-  line-height: 1.7;
-}
-
-.detail-section h4 {
-  font-size: 1rem;
+.process-step h4 {
+  font-size: 1.125rem;
   font-weight: 600;
   color: #1a1a2e;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
-.feature-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.feature-list li {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  font-size: 0.875rem;
-  color: #4b5563;
-}
-
-.check-icon {
-  width: 20px;
-  height: 20px;
-  color: #4ade80;
-  flex-shrink: 0;
-}
-
-.tech-stack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.tech-tag {
-  padding: 0.375rem 0.875rem;
-  background: #f1f5f9;
-  border-radius: 50px;
-  font-size: 0.8rem;
+.process-step p {
+  font-size: 0.9rem;
   color: #64748b;
+  line-height: 1.5;
 }
 
-.detail-footer {
+.process-arrow {
+  font-size: 1.5rem;
+  color: #cbd5e1;
+  margin-top: 1.5rem;
+}
+
+/* Contact Section */
+.contact-section {
+  padding: 5rem 0;
+}
+
+.contact-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16162a 100%);
+  border-radius: 24px;
+  padding: 3rem;
   display: flex;
   justify-content: space-between;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e2e8f0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
 }
 
-.price-info,
-.time-info {
+.contact-info h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.contact-info > p {
+  color: #94a3b8;
+  margin-bottom: 1.5rem;
+}
+
+.contact-items {
   display: flex;
   flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
 }
 
-.price-label,
-.time-label {
-  font-size: 0.75rem;
-  color: #94a3b8;
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #e2e8f0;
+  font-size: 0.95rem;
 }
 
-.price-value {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #4ade80;
+.contact-item .el-icon {
+  color: var(--color-primary, #409EFF);
 }
 
-.time-value {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #1a1a2e;
+.contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, var(--color-primary, #409EFF) 0%, #337ecc 100%);
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
 }
 
-/* Responsive */
+.contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(64, 158, 255, 0.4);
+}
+
+.contact-note {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 768px) {
-  .page-title {
+  .hero-title {
     font-size: 2rem;
   }
-  
-  .page-subtitle {
-    font-size: 1rem;
-  }
-  
-  .advantages {
-    gap: 1.5rem;
-  }
-  
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
+
   .services-grid {
     grid-template-columns: 1fr;
   }
-  
-  .cta-actions {
+
+  .process-steps {
     flex-direction: column;
+    align-items: center;
   }
-}
 
-.mt-4 {
-  margin-top: 1rem;
-}
+  .process-arrow {
+    transform: rotate(90deg);
+    margin: 0;
+  }
 
-.block {
-  width: 100%;
+  .contact-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .contact-items {
+    align-items: center;
+  }
 }
 </style>

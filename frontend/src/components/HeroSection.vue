@@ -1,6 +1,32 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, defineComponent, h } from 'vue'
 import { RouterLink } from 'vue-router'
+import { ArrowRight, Lightning } from '@element-plus/icons-vue'
+
+// Custom icons
+const Shield = defineComponent({
+  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
+    h('path', { d: 'M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z' })
+  ])
+})
+
+const CircleCheck = defineComponent({
+  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
+    h('path', { d: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z' })
+  ])
+})
+
+const TrendCharts = defineComponent({
+  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
+    h('path', { d: 'M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z' })
+  ])
+})
+
+const Code = defineComponent({
+  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
+    h('path', { d: 'M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z' })
+  ])
+})
 
 const isScrolled = ref(false)
 
@@ -18,21 +44,23 @@ onUnmounted(() => {
 
 const features = [
   {
-    icon: '⚡',
+    icon: Lightning,
     title: '高性能',
     description: 'Go 语言天生的高并发特性，打造极致性能体验',
   },
   {
-    icon: '🛡️',
+    icon: CircleCheck,
     title: '可靠性',
     description: '严格类型检查，完善的错误处理机制',
   },
   {
-    icon: '🚀',
+    icon: TrendCharts,
     title: '可扩展',
     description: '微服务架构支持，轻松应对业务增长',
   },
 ]
+
+// 注册所有自定义图标用于动态组件
 
 const techStack = [
   'Go', 'Gin', 'gRPC', 'Docker', 'Kubernetes',
@@ -42,40 +70,60 @@ const techStack = [
 
 <template>
   <section class="hero" :class="{ scrolled: isScrolled }">
+    <!-- Background Decoration -->
+    <div class="hero-bg">
+      <div class="gradient-orb orb-1"></div>
+      <div class="gradient-orb orb-2"></div>
+      <div class="grid-pattern"></div>
+    </div>
+
     <div class="container">
       <div class="hero-content">
-        <div class="hero-badge">👋 你好，我是 Sen</div>
-        <h1 class="hero-title">
+        <div class="hero-badge animate-fade-in">
+          <el-icon><Code /></el-icon>
+          <span>你好，我是 Sen</span>
+        </div>
+        
+        <h1 class="hero-title animate-fade-in stagger-1">
           Golang
           <span class="highlight">后端工程师</span>
         </h1>
-        <p class="hero-description">
+        
+        <p class="hero-description animate-fade-in stagger-2">
           专注于高性能后端开发，擅长微服务架构设计与分布式系统开发。
           用代码创造价值，用技术解决问题。
         </p>
-        <div class="hero-actions">
+        
+        <div class="hero-actions animate-fade-in stagger-3">
           <RouterLink to="/services" class="btn btn-primary">
-            查看服务
+            <span>查看服务</span>
+            <el-icon><ArrowRight /></el-icon>
           </RouterLink>
           <RouterLink to="/contact" class="btn btn-secondary">
             联系我
           </RouterLink>
         </div>
-        <div class="tech-stack">
+        
+        <div class="tech-stack animate-fade-in stagger-4">
           <span class="tech-label">技术栈：</span>
-          <span v-for="tech in techStack" :key="tech" class="tech-tag">
+          <span v-for="(tech, index) in techStack" :key="tech" class="tech-tag" :style="{ animationDelay: `${index * 0.05}s` }">
             {{ tech }}
           </span>
         </div>
       </div>
-      <div class="hero-visual">
+      
+      <div class="hero-visual animate-scale-in">
         <div class="code-window">
           <div class="code-header">
-            <span class="dot red"></span>
-            <span class="dot yellow"></span>
-            <span class="dot green"></span>
+            <div class="window-controls">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <span class="window-title">main.go</span>
           </div>
-          <pre class="code-content"><code><span class="keyword">package</span> main
+          <div class="code-content-wrapper">
+            <pre class="code-content"><code><span class="keyword">package</span> main
 
 <span class="keyword">import</span> (
     <span class="string">"fmt"</span>
@@ -87,12 +135,26 @@ const techStack = [
     senwork.<span class="function">Build</span>()
     fmt.<span class="function">Println</span>(<span class="string">"Hello, World!"</span>)
 }</code></pre>
+          </div>
+        </div>
+        
+        <!-- Floating Elements -->
+        <div class="floating-badge badge-1">
+          <el-icon><Lightning /></el-icon>
+          <span>高性能</span>
+        </div>
+        <div class="floating-badge badge-2">
+          <el-icon><Shield /></el-icon>
+          <span>安全</span>
         </div>
       </div>
     </div>
+    
     <div class="hero-features">
-      <div v-for="feature in features" :key="feature.title" class="feature-card">
-        <span class="feature-icon">{{ feature.icon }}</span>
+      <div v-for="(feature, index) in features" :key="feature.title" class="feature-card animate-slide-up" :style="{ animationDelay: `${index * 0.1 + 0.3}s` }">
+        <div class="feature-icon-wrapper">
+          <el-icon :size="28"><component :is="feature.icon" /></el-icon>
+        </div>
         <h3 class="feature-title">{{ feature.title }}</h3>
         <p class="feature-description">{{ feature.description }}</p>
       </div>
@@ -112,15 +174,61 @@ const techStack = [
   overflow: hidden;
 }
 
-.hero::before {
-  content: '';
+/* Background Decoration */
+.hero-bg {
   position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 80%;
-  height: 150%;
-  background: radial-gradient(circle, rgba(74, 222, 128, 0.08) 0%, transparent 70%);
+  inset: 0;
+  overflow: hidden;
   pointer-events: none;
+}
+
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  animation: float 20s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 600px;
+  height: 600px;
+  background: linear-gradient(135deg, rgba(64, 158, 255, 0.15) 0%, rgba(64, 158, 255, 0.05) 100%);
+  top: -200px;
+  right: -100px;
+}
+
+.orb-2 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, rgba(103, 194, 58, 0.1) 0%, rgba(103, 194, 58, 0.05) 100%);
+  bottom: -100px;
+  left: -100px;
+  animation-delay: -10s;
+}
+
+.grid-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(20px, -20px);
+  }
+  50% {
+    transform: translate(-10px, 10px);
+  }
+  75% {
+    transform: translate(15px, 15px);
+  }
 }
 
 .container {
@@ -131,6 +239,8 @@ const techStack = [
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-badge {
@@ -138,8 +248,8 @@ const techStack = [
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: rgba(74, 222, 128, 0.1);
-  color: #16a34a;
+  background: rgba(64, 158, 255, 0.1);
+  color: var(--color-primary, #409EFF);
   border-radius: 50px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -156,7 +266,7 @@ const techStack = [
 
 .highlight {
   display: block;
-  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  background: linear-gradient(135deg, var(--color-primary, #409EFF) 0%, #337ecc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -179,7 +289,7 @@ const techStack = [
 .btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.5rem;
   padding: 0.875rem 2rem;
   border-radius: 12px;
   font-size: 1rem;
@@ -191,14 +301,14 @@ const techStack = [
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  background: linear-gradient(135deg, var(--color-primary, #409EFF) 0%, #337ecc 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+  box-shadow: 0 4px 15px rgba(64, 158, 255, 0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+  box-shadow: 0 6px 20px rgba(64, 158, 255, 0.4);
 }
 
 .btn-secondary {
@@ -208,8 +318,8 @@ const techStack = [
 }
 
 .btn-secondary:hover {
-  border-color: #4ade80;
-  color: #16a34a;
+  border-color: var(--color-primary, #409EFF);
+  color: var(--color-primary, #409EFF);
 }
 
 .tech-stack {
@@ -232,16 +342,20 @@ const techStack = [
   font-size: 0.8rem;
   color: #64748b;
   transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease forwards;
+  opacity: 0;
 }
 
 .tech-tag:hover {
-  border-color: #4ade80;
-  color: #16a34a;
+  border-color: var(--color-primary, #409EFF);
+  color: var(--color-primary, #409EFF);
+  transform: translateY(-2px);
 }
 
 .hero-visual {
   display: flex;
   justify-content: center;
+  position: relative;
 }
 
 .code-window {
@@ -261,9 +375,15 @@ const techStack = [
 
 .code-header {
   display: flex;
-  gap: 8px;
-  padding: 1rem;
+  align-items: center;
+  gap: 12px;
+  padding: 1rem 1.25rem;
   background: #16162a;
+}
+
+.window-controls {
+  display: flex;
+  gap: 8px;
 }
 
 .dot {
@@ -276,8 +396,18 @@ const techStack = [
 .yellow { background: #f59e0b; }
 .green { background: #22c55e; }
 
-.code-content {
+.window-title {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-family: 'Fira Code', monospace;
+}
+
+.code-content-wrapper {
   padding: 1.5rem;
+}
+
+.code-content {
+  padding: 0;
   margin: 0;
   font-family: 'Fira Code', 'Monaco', monospace;
   font-size: 0.9rem;
@@ -287,9 +417,37 @@ const techStack = [
 }
 
 .keyword { color: #c084fc; }
-.string { color: #4ade80; }
+.string { color: #409EFF; }
 .function { color: #60a5fa; }
 .comment { color: #64748b; }
+
+.floating-badge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1a1a2e;
+  animation: float 6s ease-in-out infinite;
+}
+
+.badge-1 {
+  top: 20px;
+  right: -20px;
+  color: var(--color-warning, #E6A23C);
+}
+
+.badge-2 {
+  bottom: 40px;
+  left: -30px;
+  color: var(--color-success, #67C23A);
+  animation-delay: -3s;
+}
 
 .hero-features {
   display: grid;
@@ -299,6 +457,8 @@ const techStack = [
   margin: 0 auto;
   padding: 0 2rem;
   margin-top: 4rem;
+  position: relative;
+  z-index: 1;
 }
 
 .feature-card {
@@ -311,14 +471,20 @@ const techStack = [
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
 }
 
-.feature-icon {
-  font-size: 2.5rem;
-  display: block;
-  margin-bottom: 1rem;
+.feature-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(64, 158, 255, 0.1) 0%, rgba(64, 158, 255, 0.05) 100%);
+  border-radius: 16px;
+  color: var(--color-primary, #409EFF);
 }
 
 .feature-title {
@@ -364,6 +530,10 @@ const techStack = [
 
   .code-window:hover {
     transform: none;
+  }
+
+  .floating-badge {
+    display: none;
   }
 
   .hero-features {

@@ -72,6 +72,18 @@ export interface ContactForm {
   message: string
 }
 
+export interface Project {
+  id: string
+  name: string
+  description: string
+  image: string
+  demoUrl: string
+  repoUrl: string
+  techStack: string[]
+  featured: boolean
+  createdAt: string
+}
+
 export interface ApiResponse<T> {
   success: boolean
   data?: T
