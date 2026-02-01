@@ -1,4 +1,4 @@
-import type { AboutInfo, Skill, Service, Experience, ContactForm, Project, ApiResponse } from '@/types'
+import type { AboutInfo, Skill, Service, Experience, ContactForm, ApiResponse } from '@/types'
 
 const API_BASE = 'http://localhost:8080/api'
 
@@ -60,17 +60,16 @@ export function setLoadingState(endpoint: string, loading: boolean): void {
 // ==================== API 方法 ====================
 
 export const api = {
-  async getAbout() {
-    return fetchApi('/about')
-  },
-  async getSkills() {
-    return fetchApi('/skills')
-  },
-  async getExperience() {
-    return fetchApi('/experience')
-  },
-  async getProjects() {
-    return fetchApi('/services')
+  // 获取关于信息
+  async getAbout(): Promise<ApiResponse<AboutInfo>> {
+    const endpoint = '/about'
+    setLoadingState(endpoint, true)
+    try {
+      const result = await fetchApi<ApiResponse<AboutInfo>>(endpoint)
+      return result
+    } finally {
+      setLoadingState(endpoint, false)
+    }
   },
 
   // 获取技能列表
@@ -79,18 +78,6 @@ export const api = {
     setLoadingState(endpoint, true)
     try {
       const result = await fetchApi<ApiResponse<Skill[]>>(endpoint)
-      return result
-    } finally {
-      setLoadingState(endpoint, false)
-    }
-  },
-
-  // 获取项目列表
-  async getProjects(): Promise<ApiResponse<Project[]>> {
-    const endpoint = '/projects'
-    setLoadingState(endpoint, true)
-    try {
-      const result = await fetchApi<ApiResponse<Project[]>>(endpoint)
       return result
     } finally {
       setLoadingState(endpoint, false)
