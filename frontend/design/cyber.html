@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root@go-dev:~# 技术服务</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0d1117;
+            --text: #c9d1d9;
+            --green: #3fb950;
+            --blue: #58a6ff;
+            --red: #f85149;
+            --yellow: #d29922;
+            --gray: #8b949e;
+        }
+
+        body {
+            font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .terminal {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .terminal-header {
+            background: #21262d;
+            padding: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.red { background: var(--red); }
+        .dot.yellow { background: var(--yellow); }
+        .dot.green { background: var(--green); }
+
+        .terminal-body {
+            padding: 2rem;
+            min-height: 600px;
+        }
+
+        .prompt {
+            color: var(--green);
+            margin-bottom: 0.5rem;
+        }
+
+        .command {
+            color: var(--text);
+            margin-bottom: 1.5rem;
+        }
+
+        .output {
+            margin-bottom: 2rem;
+            padding-left: 1rem;
+            border-left: 2px solid #30363d;
+        }
+
+        h1 {
+            color: var(--blue);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .ascii-art {
+            color: var(--green);
+            font-size: 0.7rem;
+            line-height: 1.2;
+            margin: 1rem 0;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .skill-bar {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .skill-name {
+            width: 150px;
+            color: var(--gray);
+        }
+
+        .skill-level {
+            flex: 1;
+            height: 8px;
+            background: #21262d;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .skill-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), var(--blue));
+            border-radius: 4px;
+            transition: width 1s ease-out;
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .service-item {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            transition: all 0.3s;
+        }
+
+        .service-item:hover {
+            border-color: var(--green);
+            transform: translateX(5px);
+        }
+
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            color: var(--blue);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            background: rgba(88, 166, 255, 0.1);
+            color: var(--blue);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--green);
+            color: var(--bg);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .contact-btn:hover {
+            background: #2ea043;
+            box-shadow: 0 0 20px rgba(63, 185, 80, 0.4);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background: var(--green);
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            .terminal-body { padding: 1rem; }
+            .ascii-art { font-size: 0.5rem; }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+            <span style="margin-left: auto; color: var(--gray); font-size: 0.8rem;">bash — 80x24</span>
+        </div>
+
+        <div class="terminal-body">
+            <div class="prompt">root@go-dev:~$ <span class="command">whoami</span></div>
+            <div class="output">
+                <div class="ascii-art">
+   _____      ____  _           _     
+  / ____|    / __ \| |         | |    
+ | |  __ ___| |  | | |__   __ _| |_   
+ | | |_ / __| |  | | '_ \ / _` | __|  
+ | |__| \__ \ |__| | |_) | (_| | |_   
+  \_____|___/\____/|_.__/ \__,_|\__|  
+                </div>
+                <p>资深 Golang 工程师 | 云原生架构师 | 开源贡献者</p>
+                <p style="color: var(--gray); margin-top: 0.5rem;">Location: Remote | Status: <span style="color: var(--green);">Available for hire</span></p>
+            </div>
+
+            <div class="prompt">root@go-dev:~$ <span class="command">cat skills.json</span></div>
+            <div class="output">
+                <div class="skill-bar">
+                    <span class="skill-name">Go/Golang</span>
+                    <div class="skill-level"><div class="skill-fill" style="width: 95%"></div></div>
+                </div>
+                <div class="skill-bar">
+                    <span class="skill-name">Microservices</span>
+                    <div class="skill-level"><div class="skill-fill" style="width: 90%"></div></div>
+                </div>
+                <div class="skill-bar">
+                    <span class="skill-name">Kubernetes</span>
+                    <div class="skill-level"><div class="skill-fill" style="width: 85%"></div></div>
+                </div>
+                <div class="skill-bar">
+                    <span class="skill-name">Database</span>
+                    <div class="skill-level"><div class="skill-fill" style="width: 88%"></div></div>
+                </div>
+            </div>
+
+            <div class="prompt">root@go-dev:~$ <span class="command">ls -la ./services/</span></div>
+            <div class="output">
+                <div class="service-item">
+                    <div class="service-header">
+                        <span>drwxr-xr-x api-development</span>
+                        <span>Start: ¥1,200</span>
+                    </div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">RESTful API / gRPC / GraphQL 设计与实现</p>
+                    <span class="tag">Gin</span>
+                    <span class="tag">Echo</span>
+                    <span class="tag">Protocol Buffers</span>
+                </div>
+
+                <div class="service-item">
+                    <div class="service-header">
+                        <span>drwxr-xr-x system-architecture</span>
+                        <span>Start: ¥3,000</span>
+                    </div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">微服务架构设计、技术选型、性能优化</p>
+                    <span class="tag">Distributed Systems</span>
+                    <span class="tag">High Concurrency</span>
+                    <span class="tag">Cloud Native</span>
+                </div>
+
+                <div class="service-item">
+                    <div class="service-header">
+                        <span>drwxr-xr-x devops-consulting</span>
+                        <span>Start: ¥800</span>
+                    </div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">CI/CD 流程搭建、容器化部署、监控告警</p>
+                    <span class="tag">Docker</span>
+                    <span class="tag">K8s</span>
+                    <span class="tag">Prometheus</span>
+                </div>
+            </div>
+
+            <div class="prompt">root@go-dev:~$ <span class="command">./contact.sh</span></div>
+            <div class="output">
+                <p>> 开启合作流程...</p>
+                <p style="margin: 1rem 0;">
+                    <span style="color: var(--blue);">Email:</span> dev@example.com<br>
+                    <span style="color: var(--blue);">GitHub:</span> github.com/yourname<br>
+                    <span style="color: var(--blue);">WeChat:</span> gopher_dev
+                </p>
+                <a href="mailto:dev@example.com" class="contact-btn">$ 发送需求</a>
+            </div>
+
+            <div class="prompt">root@go-dev:~$ <span class="cursor"></span></div>
+        </div>
+    </div>
+
+    <script>
+        // 打字机效果
+        const commands = document.querySelectorAll('.command');
+        commands.forEach(cmd => {
+            const text = cmd.textContent;
+            cmd.textContent = '';
+            let i = 0;
+            setTimeout(() => {
+                const interval = setInterval(() => {
+                    if (i < text.length) {
+                        cmd.textContent += text[i];
+                        i++;
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 50);
+            }, Math.random() * 1000);
+        });
+
+        // 技能条动画
+        setTimeout(() => {
+            document.querySelectorAll('.skill-fill').forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        }, 500);
+    </script>
+</body>
+</html>
