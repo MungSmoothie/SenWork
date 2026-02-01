@@ -60,16 +60,17 @@ export function setLoadingState(endpoint: string, loading: boolean): void {
 // ==================== API 方法 ====================
 
 export const api = {
-  // 获取个人简介
-  async getAbout(): Promise<ApiResponse<AboutInfo>> {
-    const endpoint = '/about'
-    setLoadingState(endpoint, true)
-    try {
-      const result = await fetchApi<ApiResponse<AboutInfo>>(endpoint)
-      return result
-    } finally {
-      setLoadingState(endpoint, false)
-    }
+  async getAbout() {
+    return fetchApi('/about')
+  },
+  async getSkills() {
+    return fetchApi('/skills')
+  },
+  async getExperience() {
+    return fetchApi('/experience')
+  },
+  async getProjects() {
+    return fetchApi('/services')
   },
 
   // 获取技能列表

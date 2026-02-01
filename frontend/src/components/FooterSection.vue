@@ -61,7 +61,7 @@ onMounted(async () => {
           <ul class="footer-links">
             <li><RouterLink to="/">首页</RouterLink></li>
             <li><RouterLink to="/about">关于</RouterLink></li>
-            <li><RouterLink to="/projects">项目</RouterLink></li>
+            <li><RouterLink to="/services">服务</RouterLink></li>
             <li><RouterLink to="/contact">联系</RouterLink></li>
           </ul>
         </div>
