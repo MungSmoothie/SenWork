@@ -1,16 +1,23 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { computed } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
 import FooterSection from '@/components/FooterSection.vue'
+
+const route = useRoute()
+
+const showNavbar = computed(() => {
+  return !route.meta.hideNavbar
+})
 </script>
 
 <template>
   <div class="app">
-    <NavBar />
-    <main class="main-content">
+    <NavBar v-if="showNavbar" />
+    <main class="main-content" :class="{ 'with-navbar': showNavbar }">
       <RouterView />
     </main>
-    <FooterSection />
+    <FooterSection v-if="showNavbar" />
   </div>
 </template>
 
@@ -21,7 +28,7 @@ import FooterSection from '@/components/FooterSection.vue'
   flex-direction: column;
 }
 
-.main-content {
-  flex: 1;
+.main-content.with-navbar {
+  padding-top: 80px;
 }
 </style>

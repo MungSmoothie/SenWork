@@ -12,6 +12,7 @@ const navLinks = [
   { name: '首页', path: '/', icon: 'Home' },
   { name: '关于', path: '/about', icon: 'User' },
   { name: '服务', path: '/services', icon: 'Folder' },
+  { name: '展示', path: '/showcase', icon: 'Document' },
   { name: '联系', path: '/contact', icon: 'Message' },
 ]
 

@@ -4,6 +4,7 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 const HomeView = () => import('@/views/HomeView.vue')
 const AboutView = () => import('@/views/AboutView.vue')
 const ServicesView = () => import('@/views/ServicesView.vue')
+const ProjectShowcaseView = () => import('@/views/ProjectShowcaseView.vue')
 const ContactView = () => import('@/views/ContactView.vue')
 
 // 路由配置
@@ -31,6 +32,15 @@ const routes: RouteRecordRaw[] = [
     component: ServicesView,
     meta: {
       title: '服务项目',
+    },
+  },
+  {
+    path: '/showcase',
+    name: 'showcase',
+    component: ProjectShowcaseView,
+    meta: {
+      title: '项目展示',
+      hideNavbar: true, // 页面自带导航栏
     },
   },
   {
