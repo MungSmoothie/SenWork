@@ -7,6 +7,7 @@ import { ElMenu, ElMenuItem, ElIcon } from 'element-plus'
 const isScrolled = ref(false)
 const isMobileMenuOpen = ref(false)
 const route = useRoute()
+const activeIndex = ref(route.path)
 
 const navLinks = [
   { name: '首页', path: '/', icon: 'Home' },
@@ -15,6 +16,12 @@ const navLinks = [
   { name: '展示', path: '/showcase', icon: 'Document' },
   { name: '联系', path: '/contact', icon: 'Message' },
 ]
+
+// Watch route changes to update active state
+import { watch } from 'vue'
+watch(() => route.path, (newPath) => {
+  activeIndex.value = newPath
+})
 
 function handleScroll() {
   isScrolled.value = window.scrollY > 50
@@ -47,16 +54,17 @@ onUnmounted(() => {
 
       <!-- Desktop Menu -->
       <el-menu
-        :default-active="route.path"
+        :default-active="activeIndex"
         mode="horizontal"
         :ellipsis="false"
         class="nav-menu"
-        router
+        :router="false"
       >
         <el-menu-item 
           v-for="link in navLinks" 
           :key="link.path" 
           :index="link.path"
+          @click="$router.push(link.path)"
         >
           <el-icon><component :is="link.icon" /></el-icon>
           <span>{{ link.name }}</span>
@@ -97,16 +105,19 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 1.25rem 0;
+  padding: 1rem 0;
   transition: all 0.3s ease;
   background: transparent;
+  height: 70px;
+  box-sizing: border-box;
 }
 
 .navbar.scrolled {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
+  height: 60px;
 }
 
 .navbar-container {
@@ -116,6 +127,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 100%;
 }
 
 .logo {
@@ -144,27 +156,53 @@ onUnmounted(() => {
   border-bottom: none !important;
   background: transparent;
   display: flex;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 .nav-menu :deep(.el-menu-item) {
-  height: 48px;
-  line-height: 48px;
+  height: 44px;
+  line-height: 44px;
+  min-width: 80px;
+  padding: 0 16px !important;
   border-radius: 8px;
-  margin: 0 4px;
+  margin: 0 2px;
   color: #4b5563;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease !important;
+  position: relative;
 }
 
 .nav-menu :deep(.el-menu-item:hover),
 .nav-menu :deep(.el-menu-item.is-active) {
-  background: rgba(64, 158, 255, 0.1);
-  color: var(--color-primary, #409EFF);
+  background: rgba(64, 158, 255, 0.1) !important;
+  color: var(--color-primary, #409EFF) !important;
+}
+
+.nav-menu :deep(.el-menu-item.is-active)::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 3px;
+  background: var(--color-primary, #409EFF);
+  border-radius: 2px;
 }
 
 .nav-menu :deep(.el-menu-item .el-icon) {
   margin-right: 6px;
+  transition: none !important;
+}
+
+/* Disable Element Plus menu transitions that cause layout shifts */
+.nav-menu :deep(.el-menu--horizontal) {
+  transition: none !important;
+}
+
+.nav-menu :deep(.el-menu-item:focus),
+.nav-menu :deep(.el-menu-item:hover) {
+  transition: all 0.2s ease !important;
 }
 
 .mobile-toggle {

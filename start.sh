@@ -12,10 +12,20 @@ echo -e "${BLUE}🚀 Starting SenWork Portfolio...${NC}"
 if lsof -i:8080 > /dev/null 2>&1; then
     echo -e "${YELLOW}Backend is already running on port 8080${NC}"
 else
-    echo -e "${GREEN}Starting backend server...${NC}"
-    cd backend && go run main.go &
+    echo -e "${GREEN}Building and starting backend server...${NC}"
+    cd backend && go build -o senwork main.go && ./senwork &
     BACKEND_PID=$!
     echo -e "${GREEN}Backend started (PID: $BACKEND_PID)${NC}"
+    
+    # Wait for backend to be ready
+    echo -e "${YELLOW}Waiting for backend to be ready...${NC}"
+    for i in {1..30}; do
+        if curl -s http://localhost:8080/api/about > /dev/null 2>&1; then
+            echo -e "${GREEN}Backend is ready!${NC}"
+            break
+        fi
+        sleep 0.2
+    done
 fi
 
 # Start frontend

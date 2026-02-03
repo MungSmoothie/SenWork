@@ -1,29 +1,18 @@
 <script setup lang="ts">
-import { ref, defineComponent, h, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { ElMenu, ElMenuItem, ElIcon, ElAnchor, ElAnchorLink, ElCard, ElButton, ElTag, ElCollapse, ElCollapseItem, ElDialog, ElInput, ElSelect, ElSelectV2, ElOption, ElSteps, ElStep } from 'element-plus'
+import { ref, computed } from 'vue'
+import { RouterLink } from 'vue-router'
+import { ElMenu, ElMenuItem, ElIcon, ElButton, ElTag, ElDialog, ElInput, ElTable, ElTabPane, ElTabs } from 'element-plus'
 import {
-  Document, Folder, Code, Setting, Check, View, Download, ChatDotRound, Search, Reading, Collection, Connection, Grid, List, FolderOpened
+  Document, Folder, Setting, Check, ChatDotRound, Reading, Connection, Grid, List, FolderOpened, Clock, Trophy, Fold, Expand
 } from '@element-plus/icons-vue'
 
 // 自定义图标
-const ProjectIcon = defineComponent({
-  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
-    h('path', { d: 'M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z' })
-  ])
-})
-
 const StructureIcon = defineComponent({
   render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
     h('path', { d: 'M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z' })
   ])
 })
 
-const CodeIcon = defineComponent({
-  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
-    h('path', { d: 'M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z' })
-  ])
-})
 
 const DatabaseIcon = defineComponent({
   render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
@@ -33,30 +22,22 @@ const DatabaseIcon = defineComponent({
 
 const APIcon = defineComponent({
   render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
-    h('path', { d: 'M14.6 16.6l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4zm-5.2 0L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4z' })
+    h('path', { d: 'M14.6 16.6l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z' })
   ])
 })
 
-const DeployIcon = defineComponent({
-  render: () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [
-    h('path', { d: 'M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z' })
-  ])
-})
-
-const route = useRoute()
 const activeSection = ref('intro')
-const isMobileMenuOpen = ref(false)
+const sidebarCollapsed = ref(false)
 
-// 侧边栏菜单
 const sidebarMenus = [
   { id: 'intro', title: '服务介绍', icon: Document },
-  { id: 'projects', title: '项目展示', icon: Folder },
+  { id: 'projects', title: '展示', icon: Folder },
   { id: 'structure', title: '代码结构', icon: StructureIcon },
   { id: 'documents', title: '文档规范', icon: Reading },
   { id: 'pricing', title: '价格说明', icon: Setting },
 ]
 
-// 项目展示数据
+// 展示数据
 const projects = [
   {
     id: 'campus-social',
@@ -103,48 +84,6 @@ posts ||--o{ likes : "拥有"`
       { method: 'GET', path: '/api/posts', desc: '获取动态列表' },
       { method: 'POST', path: '/api/posts/:id/comments', desc: '评论动态' },
       { method: 'POST', path: '/api/posts/:id/like', desc: '点赞动态' }
-    ]
-  },
-  {
-    id: 'ecommerce',
-    title: '电商系统',
-    category: '商业项目',
-    tags: ['Vue3', 'Go', 'MySQL', 'RabbitMQ'],
-    description: '完整的电商平台，包含商品、订单、支付、购物车等核心功能',
-    features: ['商品管理', '订单流程', '支付对接', '库存管理', '物流追踪'],
-    difficulty: '较难',
-    duration: '8周',
-    score: '已上线',
-    fullDescription: `本项目是一个完整的电商平台系统，采用前后端分离架构。
-
-后端使用 Go 语言开发，基于 Gin 框架，采用 CQRS 架构模式，将读写操作分离。前端使用 Vue3 + Element Plus 开发，响应式设计，适配各种设备。
-
-系统支持多种支付方式（支付宝、微信）、完整的订单流程（下单、支付、发货、收货、评价）、库存实时更新、优惠券使用、促销活动等功能。`,
-    techDetails: {
-      backend: ['Go 1.21', 'Gin 1.9', 'gRPC', 'RabbitMQ'],
-      database: ['MySQL 8.0', 'Redis 7.0', 'Elasticsearch'],
-      deployment: ['Docker', 'K8s', '阿里云'],
-      testing: ['Go testing', 'Vue Test Utils']
-    },
-    database: {
-      tables: [
-        { name: 'products', desc: '商品表', fields: ['id', 'name', 'category_id', 'price', 'stock', 'status'] },
-        { name: 'orders', desc: '订单表', fields: ['id', 'user_id', 'order_no', 'status', 'total_amount'] },
-        { name: 'order_items', desc: '订单商品表', fields: ['id', 'order_id', 'product_id', 'quantity', 'price'] },
-        { name: 'carts', desc: '购物车表', fields: ['id', 'user_id', 'product_id', 'quantity'] },
-        { name: 'payments', desc: '支付表', fields: ['id', 'order_id', 'amount', 'status', 'pay_type'] }
-      ],
-      erDiagram: `products ||--o{ order_items : "包含"
-orders ||--o{ order_items : "包含"
-users ||--o{ orders : "下单"
-users ||--o{ carts : "购物"`
-    },
-    apiEndpoints: [
-      { method: 'GET', path: '/api/products', desc: '商品列表' },
-      { method: 'GET', path: '/api/products/:id', desc: '商品详情' },
-      { method: 'POST', path: '/api/carts', desc: '加入购物车' },
-      { method: 'POST', path: '/api/orders', desc: '创建订单' },
-      { method: 'POST', path: '/api/payments/alipay', desc: '支付宝支付' }
     ]
   },
   {
@@ -319,7 +258,7 @@ const filteredProjects = computed(() => {
         <nav class="header-nav">
           <RouterLink to="/">首页</RouterLink>
           <RouterLink to="/services">服务</RouterLink>
-          <RouterLink to="/showcase" class="active">项目展示</RouterLink>
+          <RouterLink to="/showcase" class="active">展示</RouterLink>
           <RouterLink to="/about">关于</RouterLink>
           <RouterLink to="/contact">联系</RouterLink>
         </nav>
@@ -333,7 +272,7 @@ const filteredProjects = computed(() => {
           <el-icon v-if="!sidebarCollapsed"><Document /></el-icon>
           <span v-if="!sidebarCollapsed">目录</span>
           <el-button text @click="sidebarCollapsed = !sidebarCollapsed">
-            <el-icon>{{ sidebarCollapsed ? 'Expand' : 'Fold' }}</el-icon>
+            <el-icon><Fold v-if="!sidebarCollapsed" /><Expand v-else /></el-icon>
           </el-button>
         </div>
         <el-menu
@@ -358,14 +297,14 @@ const filteredProjects = computed(() => {
         <!-- 服务介绍 -->
         <section id="intro" class="content-section">
           <div class="section-header">
-            <h1>项目展示 & 毕业设计</h1>
+            <h1>展示 & 毕业设计</h1>
             <p class="subtitle">展示已完成的优质项目，提供毕业设计和项目开发服务</p>
           </div>
 
           <div class="intro-cards">
             <div class="intro-card">
               <div class="card-icon">
-                <el-icon :size="32"><CodeIcon /></el-icon>
+                <el-icon :size="32"><Folder /></el-icon>
               </div>
               <h3>完整项目代码</h3>
               <p>从零开发的完整项目，代码规范、注释详细、可直接运行</p>
@@ -390,10 +329,10 @@ const filteredProjects = computed(() => {
           </div>
         </section>
 
-        <!-- 项目展示 -->
+        <!-- 展示 -->
         <section id="projects" class="content-section">
           <div class="section-header">
-            <h2>精选项目展示</h2>
+            <h2>精选展示</h2>
             <p class="subtitle">已完成的优质项目，可作为毕设参考或直接使用</p>
           </div>
 
@@ -615,7 +554,7 @@ const filteredProjects = computed(() => {
     <!-- 项目详情弹窗 -->
     <el-dialog
       v-model="showProjectDetail"
-      :title="selectedProject.title"
+      :title="selectedProject?.title || ''"
       width="900px"
       destroy-on-close
       class="project-detail-dialog"

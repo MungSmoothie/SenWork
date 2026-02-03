@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	r := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.New()
 
 	// Enable CORS for frontend
 	r.Use(func(c *gin.Context) {

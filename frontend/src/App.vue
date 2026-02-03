@@ -13,9 +13,9 @@ const showNavbar = computed(() => {
 
 <template>
   <div class="app">
-    <NavBar v-if="showNavbar" />
+    <NavBar v-if="showNavbar" class="navbar-fixed" />
     <main class="main-content" :class="{ 'with-navbar': showNavbar }">
-      <RouterView />
+      <RouterView :key="route.path" />
     </main>
     <FooterSection v-if="showNavbar" />
   </div>
@@ -26,6 +26,14 @@ const showNavbar = computed(() => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.navbar-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
 
 .main-content.with-navbar {
